@@ -4,7 +4,7 @@ from flask import Flask,render_template
 import pymysql
 
 app = Flask(__name__,static_folder='templates')
-
+#链接数据库操作
 # db = pymysql.connect(
 #         host='127.0.0.1',
 #         user='root',
@@ -19,13 +19,14 @@ app = Flask(__name__,static_folder='templates')
 # data = cd.fetchall()
 # v1 = []
 # v2 = []
+#导入数据到列表
 # for i in data:
 #     v1.append(i[0])
 #     v2.append(i[1])
-
+#由于未创建数据库所以手动创建v1 v2数据
 v1 = ['data','data2','data3','data4']
 v2 = [60,80,90,100]
-
+#雷达图制作部分
 def radar():
     r = (
         Radar()
@@ -39,7 +40,7 @@ def radar():
         .set_global_opts(opts.TitleOpts(title='大数据比赛可视化项目'))
     )
     return r
-
+#flask框架部分
 @app.route('/')
 def index():
     return render_template('index.html')
