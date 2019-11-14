@@ -14,6 +14,7 @@
 				var chart = echarts.init(document.getElementById('radar'),'white',{renderer:canvas});
 				$.ajax([
 					type:'GET',
+					//将IP改为服务端的公网ip
 					url:'http://127.0.0.1:5000/radarchar'
 					dataType:'json',
 					success:function(result){
