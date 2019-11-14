@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>雷达图</title>
+    <script src="/templates/echarts.min.js"></script>
+    <script src="/templates/jquer11.js"></script>
+</head>
+<body>
+    <div id="radar" style="width:1000px;height:600px"></div>
+    <script>
+    、 $(
+			function (){
+				var chart = echarts.init(document.getElementById('radar'),'white',{renderer:canvas});
+				$.ajax([
+					type:'GET',
+					url:'http://127.0.0.1:5000/radarchar'
+					dataType:'json',
+					success:function(result){
+						chart.setOption(result);
+					}
+				]);
+			}
+	)
+    </script>
+</body>
+</html>
