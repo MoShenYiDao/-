@@ -1,0 +1,122 @@
+# zookeeper
+这个文档是用来记录 `zookeeper` 的安装
+
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+* [zookeeper](#zookeeper)
+	* [Step1-解压](#step1-解压)
+	* [Step2-环境变量](#step2-环境变量)
+	* [Step3-配置](#step3-配置)
+		* [配置文件](#配置文件)
+		* [配置 myid](#配置-myid)
+	* [Step4-同步Slave](#step4-同步slave)
+		* [Master](#master)
+		* [Slave1](#slave1)
+		* [Slave2](#slave2)
+	* [Step5-启动](#step5-启动)
+		* [master](#master-1)
+		* [Slave1](#slave1-1)
+		* [Slave2](#slave2-1)
+	* [Step6-测试](#step6-测试)
+	* [Step7-注意事项](#step7-注意事项)
+
+<!-- /code_chunk_output -->
+
+
+## Step1-解压
+
+```bash
+tar -zxvf zookeeper.tar.gz -C /simple/
+```
+
+## Step2-环境变量
+
+```bash
+vim ~/.bashrc
+
+export ZOOKEEPER_HOME = /simple/zookeeper
+export PATH=$PATH:ZOOKEEPER_HOME/bin
+
+source ~/.bashrc
+```
+
+## Step3-配置
+
+### 配置文件
+
+```bash
+cd $ZOOKEEPER_INSTALL/conf
+cp zoo_sample.cfg zoo.cfg
+vim zoo.cfg
+# 输入如下内容
+# server.1=192.168.0.202:2888:3888
+# server.2=192.168.0.203:2888:3888
+# server.3=192.168.0.204:2888:3888
+```
+
+### 配置 myid
+
+```bash
+mkdir /tmp/zookeeper
+echo "1" > /tmp/zookeepr/myid
+```
+
+## Step4-同步Slave
+
+### Master 
+
+```bash
+scp -r $ZOOKEEPER_HOME slave1:/simple/zookeeper
+scp -r $ZOOKEEPER_HOME slave2:/simple/zookeeper
+scp ~/.bashrc slave1:~/.bashrc
+scp ~/.bashrc slave2:~/.bashrc
+```
+
+### Slave1
+```bash
+source ~/.bashrc
+mkdir /tmp/zookeeper
+echo "2" > /tmp/zookeeper/myid
+```
+
+### Slave2
+```bash
+source ~/.bashrc
+mkdir /tmp/zookeeper
+echo "3" > /tmp/zookeeper/myid
+```
+## Step5-启动
+
+### master
+
+```bash
+zkSever.sh start
+```
+
+### Slave1
+
+```bash
+zkSever.sh start
+```
+
+### Slave2
+
+```bash
+zkSever.sh start
+```
+
+## Step6-测试
+
+分别在三台机器运行 `zkSever.sh status`
+
+就能看的 `flower` 和 `lader`
+
+## Step7-注意事项
+
+1. 遇到问题要在 `./bin` 目录查看 `zookeeper.out`
+2. 遇到 `Addredd is used` 时应该 `kill PID`
+3. 遇到 `Connect xxxxx ` 时应该 `service iptables stop`
+4. 遇到 `Connect 192.xxxx` 时应该确保三台都启动了
