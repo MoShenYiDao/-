@@ -1,0 +1,55 @@
+package MapReduce;
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.GenericOptionsParser;
+
+public class WordCount{
+	public static void main(String args[]) throws Exception{
+		Configuration conf=new Configuration();
+		Job job=Job.getInstance(conf);
+		
+		String arr[]=new GenericOptionsParser(conf,args).getRemainingArgs();
+		if(arr.length!=2) {
+			System.err.println("用法：包名 输入 输出");
+			System.exit(1);
+		}
+		FileInputFormat.setInputPaths(job,new Path(arr[0]));
+		FileOutputFormat.setOutputPath(job,new Path(arr[1]));
+		
+		job.setJarByClass(WordCount.class);
+		job.setMapperClass(NBMapper.class);
+		job.setReducerClass(NBReducer.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
+		System.exit(job.waitForCompletion(true)?0:1);
+	}
+	
+	public static class NBMapper extends Mapper<LongWritable,Text,Text,IntWritable>{
+		protected void map(LongWritable key,Text value,Context context) throws IOException,InterruptedException{
+			String line=value.toString();
+			if(line.contains("regex")) {
+				String arr[]=line.split("regex");
+				context.write(new Text(arr[1]),new IntWritable(1));
+			}
+		}
+	}
+	
+	public static class NBReducer extends Reducer<Text,IntWritable,Text,IntWritable>{
+		int sum=0;
+		protected void reducer(Text key,Iterable<IntWritable> values,Context context) throws IOException,InterruptedException{
+			for(IntWritable con:values) {
+				sum+=con.get();
+			}
+			context.write(key,new IntWritable(sum));
+		}
+	}
+}
